@@ -31,12 +31,30 @@ func _on_match_started() -> void:
 	# Networked Objects: Only Server Spawns, Spawner Replicates
 	if multiplayer.is_server():
 		# Instance Players
+		var index = 0
 		for id in GameManager.players:
 			var player = player_scn.instantiate()
 			player.name = str(id) # Important: Set name to peer ID logic
 			player.position = Vector3(0, 1, 0)
-			# Randomize/Distribute spawn positions based on team later
+			
+			# Team Assignment: Simple Alternating
+			var team = (index % 2) + 1
+			player.team_id = team # Sync property handles this automatically
+			player.update_color() # Update locally for server
+			
+			# Spawn Positions (Opposite sides)
+			var spawn_pos = Vector3.ZERO
+			if team == 1:
+				spawn_pos = Vector3(0, 1, 8)
+			else:
+				spawn_pos = Vector3(0, 1, -8)
+			
+			# Use look_at_from_position to set transform safely before adding to tree
+			player.look_at_from_position(spawn_pos, Vector3.ZERO, Vector3.UP)
+			
 			add_child(player)
+			
+			index += 1
 		
 		# Instance Ball
 		var ball = ball_scn.instantiate()

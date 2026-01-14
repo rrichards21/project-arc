@@ -108,6 +108,7 @@ func _setup_inputs() -> void:
 		"move_right": [KEY_D, KEY_RIGHT],
 		"dash": [KEY_SPACE, KEY_SHIFT],
 		"grab": [KEY_E, KEY_ENTER, MOUSE_BUTTON_LEFT],
+		"attack": [MOUSE_BUTTON_RIGHT],
 		"reset_match": [KEY_R],
 		"pause": [KEY_ESCAPE],
 	}

@@ -14,8 +14,28 @@ properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_Server"]
+properties/0/path = NodePath(".:team_id")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:is_dead")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath(".:current_health")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+
 [sub_resource type="BoxMesh" id="BoxMesh_Visor"]
 size = Vector3(0.6, 0.2, 0.2)
+
+[sub_resource type="Gradient" id="Gradient_Health"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 1, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_Health"]
+gradient = SubResource("Gradient_Health")
+width = 100
+height = 10
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
@@ -32,10 +52,17 @@ mesh = SubResource("CapsuleMesh_1")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.4)
 mesh = SubResource("BoxMesh_Visor")
 
+[node name="HealthBar" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+cast_shadow = 0
+billboard = 1
+no_depth_test = true
+texture = SubResource("GradientTexture2D_Health")
+
 [node name="RayCast3D" type="RayCast3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
 target_position = Vector3(0, 0, -2)
-collision_mask = 8
+collision_mask = 14
 debug_shape_custom_color = Color(1, 0, 0, 1)
 
 [node name="Generic6DOFJoint3D" type="Generic6DOFJoint3D" parent="."]
@@ -62,3 +89,6 @@ angular_limit_z/lower_angle = 0.0
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_Player")
+
+[node name="ServerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_Server")
