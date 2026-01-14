@@ -134,7 +134,12 @@ func start_match() -> void:
 	match_started.emit()
 	print("Match started!")
 
+	# Future: Reset ball position signal?
+
 func on_goal_scored(team_scored_against: int) -> void:
+	# Only server logic updates the source of truth
+	if not multiplayer.is_server(): return
+
 	if team_scored_against == 1:
 		score_team_2 += 1
 		print("GOAL for Team 2! Score: %d - %d" % [score_team_1, score_team_2])
@@ -142,7 +147,15 @@ func on_goal_scored(team_scored_against: int) -> void:
 		score_team_1 += 1
 		print("GOAL for Team 1! Score: %d - %d" % [score_team_1, score_team_2])
 	
-	# Future: Reset ball position signal?
+	# Sync to all clients
+	rpc("sync_score", score_team_1, score_team_2)
+
+@rpc("authority", "call_local", "reliable")
+func sync_score(s1: int, s2: int) -> void:
+	score_team_1 = s1
+	score_team_2 = s2
+	score_updated.emit(score_team_1, score_team_2)
+	print("Score Synced: %d - %d" % [score_team_1, score_team_2])
 
 func end_match() -> void:
 	current_state = GameState.GAME_OVER

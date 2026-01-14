@@ -8,8 +8,14 @@ extends Node3D
 func _ready() -> void:
 	print("Main Scene Ready")
 	GameManager.match_started.connect(_on_match_started)
+	# Listen for score updates (Networked)
+	GameManager.score_updated.connect(_on_score_updated)
+	
 	# Auto-start for MVP testing
 	GameManager.call_deferred("start_match")
+
+func _on_score_updated(s1: int, s2: int) -> void:
+	$HUD/ScoreLabel.text = "%d - %d" % [s1, s2]
 
 func _on_match_started() -> void:
 	print("Main: Setting up match...")
