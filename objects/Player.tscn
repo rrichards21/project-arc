@@ -6,6 +6,14 @@
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_1"]
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_Player"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
 [sub_resource type="BoxMesh" id="BoxMesh_Visor"]
 size = Vector3(0.6, 0.2, 0.2)
 
@@ -51,3 +59,6 @@ angular_limit_y/lower_angle = 0.0
 angular_limit_z/enabled = true
 angular_limit_z/upper_angle = 0.0
 angular_limit_z/lower_angle = 0.0
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_Player")

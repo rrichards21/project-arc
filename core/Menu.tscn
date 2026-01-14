@@ -50,11 +50,23 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Practice"
 
-[node name="BtnOnline" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="LineEditIP" type="LineEdit" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(200, 30)
+layout_mode = 2
+placeholder_text = "127.0.0.1"
+alignment = 1
+
+[node name="BtnHost" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Play Online"
+text = "Host Game"
+
+[node name="BtnJoin" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Join Game"
 
 [node name="BtnQuit" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
@@ -64,5 +76,6 @@ text = "Quit"
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/BtnLocal" to="." method="_on_btn_local_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/BtnPractice" to="." method="_on_btn_practice_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/BtnOnline" to="." method="_on_btn_online_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/BtnHost" to="." method="_on_btn_host_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/BtnJoin" to="." method="_on_btn_join_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/BtnQuit" to="." method="_on_btn_quit_pressed"]

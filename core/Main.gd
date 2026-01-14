@@ -20,40 +20,54 @@ func _on_match_started() -> void:
 	var ball_scn = load("res://objects/Ball.tscn")
 	var goal_scn = load("res://objects/Goal.tscn")
 	
-	# Instance Arena
+	# Instance Arena (Static, everyone instantiates it or it should be part of the scene)
+	# Ideally Arena is part of the map, but here we instantiate it. 
+	# Since it's static and has no sync, it's fine if everyone instances it LOCALLY, 
+	# UNLESS we want to sync it. For now, let's keep Arena local for everyone 
+	# so it doesn't need network overhead, assuming it doesn't move.
 	var arena = arena_scn.instantiate()
 	add_child(arena)
 	
-	# Instance Player
-	var player = player_scn.instantiate()
-	player.position = Vector3(0, 1, 5)
-	add_child(player)
-	
-	# Assign Camera Target
-	if camera is CameraFollow:
-		camera.target = player
-	
-	# Instance Ball
-	var ball = ball_scn.instantiate()
-	ball.position = Vector3(0, 2, 0)
-	ball.name = "Ball" # Important for detection
-	add_child(ball)
-	
-	# Instance Goal 1 (Team 1 Defends, North Side)
-	var goal1 = goal_scn.instantiate()
-	goal1.position = Vector3(0, 0.5, -12)
-	goal1.rotation_degrees.y = 0 # Face South (Towards Center)
-	goal1.team_id = 1
-	goal1.connect("goal_scored", _on_goal_scored)
-	add_child(goal1)
+	# Networked Objects: Only Server Spawns, Spawner Replicates
+	if multiplayer.is_server():
+		# Instance Players
+		for id in GameManager.players:
+			var player = player_scn.instantiate()
+			player.name = str(id) # Important: Set name to peer ID logic
+			player.position = Vector3(0, 1, 0)
+			# Randomize/Distribute spawn positions based on team later
+			add_child(player)
+		
+		# Instance Ball
+		var ball = ball_scn.instantiate()
+		ball.position = Vector3(0, 2, 0)
+		ball.name = "Ball"
+		add_child(ball)
+		
+		# Instance Goal 1
+		var goal1 = goal_scn.instantiate()
+		goal1.position = Vector3(0, 0.5, -12)
+		goal1.rotation_degrees.y = 0
+		goal1.team_id = 1
+		goal1.name = "Goal1"
+		goal1.connect("goal_scored", _on_goal_scored)
+		add_child(goal1)
 
-	# Instance Goal 2 (Team 2 Defends, South Side)
-	var goal2 = goal_scn.instantiate()
-	goal2.position = Vector3(0, 0.5, 12)
-	goal2.rotation_degrees.y = 180 # Face North (Towards Center)
-	goal2.team_id = 2
-	goal2.connect("goal_scored", _on_goal_scored)
-	add_child(goal2)
+		# Instance Goal 2
+		var goal2 = goal_scn.instantiate()
+		goal2.position = Vector3(0, 0.5, 12)
+		goal2.rotation_degrees.y = 180
+		goal2.team_id = 2
+		goal2.name = "Goal2"
+		goal2.connect("goal_scored", _on_goal_scored)
+		add_child(goal2)
+
+func _process(_delta: float) -> void:
+	# Camera setup for Client (since they don't spawn the player themselves anymore)
+	if camera.target == null:
+		var my_id = multiplayer.get_unique_id()
+		if has_node(str(my_id)):
+			camera.target = get_node(str(my_id))
 
 func _on_goal_scored(team_id: int) -> void:
 	GameManager.on_goal_scored(team_id)

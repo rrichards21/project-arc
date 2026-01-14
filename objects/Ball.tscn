@@ -9,6 +9,20 @@ bounce = 0.8
 [sub_resource type="SphereShape3D" id="SphereShape3D_1"]
 radius = 0.5
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_Ball"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:linear_velocity")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:angular_velocity")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+
 [sub_resource type="SphereMesh" id="SphereMesh_1"]
 radius = 0.5
 height = 1.0
@@ -22,6 +36,9 @@ script = ExtResource("1_ball")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_1")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_Ball")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_1")

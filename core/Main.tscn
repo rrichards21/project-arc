@@ -20,6 +20,10 @@ glow_enabled = true
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
 
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://objects/Player.tscn", "res://objects/Ball.tscn", "res://objects/Goal.tscn")
+spawn_path = NodePath("..")
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1")
 
