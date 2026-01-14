@@ -1,0 +1,72 @@
+[gd_scene load_steps=9 format=3 uid="uid://arena_uuid_001"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Floor"]
+size = Vector3(50, 1, 30)
+
+[sub_resource type="BoxMesh" id="BoxMesh_Floor"]
+size = Vector3(50, 1, 30)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_Floor"]
+albedo_color = Color(0.1, 0.6, 0.2, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_WallLong"]
+size = Vector3(50, 5, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_WallShort"]
+size = Vector3(1, 5, 30)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_Wall"]
+transparency = 1
+albedo_color = Color(0.2, 0.5, 1, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_WallLong"]
+material = SubResource("StandardMaterial3D_Wall")
+size = Vector3(50, 5, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_WallShort"]
+material = SubResource("StandardMaterial3D_Wall")
+size = Vector3(1, 5, 30)
+
+[node name="Arena" type="StaticBody3D"]
+collision_mask = 14
+
+[node name="CollisionFloor" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_Floor")
+
+[node name="MeshFloor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("BoxMesh_Floor")
+surface_material_override/0 = SubResource("StandardMaterial3D_Floor")
+
+[node name="CollisionWallNorth" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -15.5)
+shape = SubResource("BoxShape3D_WallLong")
+
+[node name="MeshWallNorth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -15.5)
+mesh = SubResource("BoxMesh_WallLong")
+
+[node name="CollisionWallSouth" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 15.5)
+shape = SubResource("BoxShape3D_WallLong")
+
+[node name="MeshWallSouth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 15.5)
+mesh = SubResource("BoxMesh_WallLong")
+
+[node name="CollisionWallEast" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 2.5, 0)
+shape = SubResource("BoxShape3D_WallShort")
+
+[node name="MeshWallEast" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 2.5, 0)
+mesh = SubResource("BoxMesh_WallShort")
+
+[node name="CollisionWallWest" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.5, 2.5, 0)
+shape = SubResource("BoxShape3D_WallShort")
+
+[node name="MeshWallWest" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.5, 2.5, 0)
+mesh = SubResource("BoxMesh_WallShort")

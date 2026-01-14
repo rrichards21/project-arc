@@ -1,0 +1,68 @@
+[gd_scene load_steps=7 format=3 uid="uid://goal_uuid_001"]
+
+[ext_resource type="Script" path="res://objects/Goal.gd" id="1_goal"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_Goal"]
+friction = 0.8
+rough = true
+bounce = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_Goal"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_Wall"]
+material = SubResource("StandardMaterial3D_Goal")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Wall"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Detector"]
+size = Vector3(4.8, 2.4, 0.5)
+
+[node name="Goal" type="RigidBody3D"]
+collision_layer = 9
+collision_mask = 15
+axis_lock_linear_y = true
+axis_lock_angular_x = true
+axis_lock_angular_z = true
+mass = 50.0
+physics_material_override = SubResource("PhysicsMaterial_Goal")
+linear_damp = 1.0
+angular_damp = 1.0
+script = ExtResource("1_goal")
+
+[node name="WallLeft" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 2, -2.6, 1.25, 0)
+shape = SubResource("BoxShape3D_Wall")
+
+[node name="MeshLeft" type="MeshInstance3D" parent="WallLeft"]
+mesh = SubResource("BoxMesh_Wall")
+
+[node name="WallRight" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 2, 2.6, 1.25, 0)
+shape = SubResource("BoxShape3D_Wall")
+
+[node name="MeshRight" type="MeshInstance3D" parent="WallRight"]
+mesh = SubResource("BoxMesh_Wall")
+
+[node name="WallTop" type="CollisionShape3D" parent="."]
+transform = Transform3D(5.4, 0, 0, 0, 0.2, 0, 0, 0, 2, 0, 2.6, 0)
+shape = SubResource("BoxShape3D_Wall")
+
+[node name="MeshTop" type="MeshInstance3D" parent="WallTop"]
+mesh = SubResource("BoxMesh_Wall")
+
+[node name="WallBack" type="CollisionShape3D" parent="."]
+transform = Transform3D(5, 0, 0, 0, 2.5, 0, 0, 0, 0.2, 0, 1.25, -1.1)
+shape = SubResource("BoxShape3D_Wall")
+
+[node name="MeshBack" type="MeshInstance3D" parent="WallBack"]
+mesh = SubResource("BoxMesh_Wall")
+
+[node name="GoalDetector" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -0.5)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoalDetector"]
+shape = SubResource("BoxShape3D_Detector")

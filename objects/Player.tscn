@@ -1,0 +1,53 @@
+[gd_scene load_steps=5 format=3 uid="uid://player_uuid_001"]
+
+[ext_resource type="Script" path="res://objects/Player.gd" id="1_player"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_1"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_Visor"]
+size = Vector3(0.6, 0.2, 0.2)
+
+[node name="Player" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 13
+script = ExtResource("1_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_1")
+
+[node name="Visor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.4)
+mesh = SubResource("BoxMesh_Visor")
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+target_position = Vector3(0, 0, -2)
+collision_mask = 8
+debug_shape_custom_color = Color(1, 0, 0, 1)
+
+[node name="Generic6DOFJoint3D" type="Generic6DOFJoint3D" parent="."]
+node_a = NodePath("..")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+linear_limit_x/enabled = true
+linear_limit_x/upper_distance = 0.0
+linear_limit_x/lower_distance = 0.0
+linear_limit_y/enabled = true
+linear_limit_y/upper_distance = 0.0
+linear_limit_y/lower_distance = 0.0
+linear_limit_z/enabled = true
+linear_limit_z/upper_distance = 0.0
+linear_limit_z/lower_distance = 0.0
+angular_limit_x/enabled = true
+angular_limit_x/upper_angle = 0.0
+angular_limit_x/lower_angle = 0.0
+angular_limit_y/enabled = true
+angular_limit_y/upper_angle = 0.0
+angular_limit_y/lower_angle = 0.0
+angular_limit_z/enabled = true
+angular_limit_z/upper_angle = 0.0
+angular_limit_z/lower_angle = 0.0
