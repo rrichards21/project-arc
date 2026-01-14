@@ -38,6 +38,25 @@ theme_override_font_sizes/font_size = 64
 text = "PROJECT ARC"
 horizontal_alignment = 1
 
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Duration: "
+
+[node name="OptionButtonTime" type="OptionButton" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+item_count = 3
+selected = 1
+popup/item_0/text = "3 Minutes"
+popup/item_0/id = 180
+popup/item_1/text = "5 Minutes"
+popup/item_1/id = 300
+popup/item_2/text = "10 Minutes"
+popup/item_2/id = 600
+
 [node name="BtnLocal" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2

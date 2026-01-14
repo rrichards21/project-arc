@@ -11,7 +11,10 @@ var score_team_1: int = 0
 var score_team_2: int = 0
 var score_team_a: int = 0 # Legacy vars, can clean up later
 var score_team_b: int = 0 # Legacy vars
-var time_remaining: float = 0.0
+
+var match_length: int = 300 # Default 5 minutes
+var time_remaining: float = 300.0
+var is_game_active: bool = false
 
 # Multiplayer
 var peer = ENetMultiplayerPeer.new()

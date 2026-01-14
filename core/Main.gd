@@ -68,6 +68,11 @@ func _process(_delta: float) -> void:
 		var my_id = multiplayer.get_unique_id()
 		if has_node(str(my_id)):
 			camera.target = get_node(str(my_id))
+			
+	# Update HUD Timer
+	var m = int(GameManager.time_remaining) / 60
+	var s = int(GameManager.time_remaining) % 60
+	$HUD/TimeLabel.text = "%02d:%02d" % [m, s]
 
 func _on_goal_scored(team_id: int) -> void:
 	GameManager.on_goal_scored(team_id)

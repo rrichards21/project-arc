@@ -3,16 +3,19 @@ extends Control
 @onready var item_list: ItemList = $CenterContainer/VBoxContainer/ItemList
 @onready var btn_ready: Button = $CenterContainer/VBoxContainer/BtnReady
 @onready var btn_start: Button = $CenterContainer/VBoxContainer/BtnStart
+@onready var opt_time: OptionButton = $CenterContainer/VBoxContainer/OptionButtonTime
 
 func _ready() -> void:
 	GameManager.player_list_changed.connect(refresh_list)
 	
-	# Only Host sees Start button
+	# Only Host sees Start button and Time Config
 	if multiplayer.is_server():
 		btn_start.visible = true
 		btn_start.disabled = true
+		opt_time.visible = true
 	else:
 		btn_start.visible = false
+		opt_time.visible = false # Logic to show "Current Settings" could be added later
 		
 	refresh_list()
 
@@ -50,10 +53,11 @@ func toggle_ready(id: int) -> void:
 		GameManager.player_list_changed.emit()
 
 func _on_btn_start_pressed() -> void:
-	rpc("start_game_rpc")
+	rpc("start_game_rpc", opt_time.get_selected_id())
 
 @rpc("authority", "call_local")
-func start_game_rpc() -> void:
+func start_game_rpc(duration: int) -> void:
+	GameManager.match_length = duration
 	get_tree().change_scene_to_file("res://core/Main.tscn")
 	GameManager.start_match()
 

@@ -50,6 +50,17 @@ custom_minimum_size = Vector2(0, 50)
 theme_override_font_sizes/font_size = 24
 text = "READY"
 
+[node name="OptionButtonTime" type="OptionButton" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+item_count = 3
+selected = 1
+popup/item_0/text = "3 Minutes"
+popup/item_0/id = 180
+popup/item_1/text = "5 Minutes"
+popup/item_1/id = 300
+popup/item_2/text = "10 Minutes"
+popup/item_2/id = 600
+
 [node name="BtnStart" type="Button" parent="CenterContainer/VBoxContainer"]
 visible = false
 layout_mode = 2
