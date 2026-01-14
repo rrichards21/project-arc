@@ -27,6 +27,7 @@ func _setup_inputs() -> void:
 		"dash": [KEY_SPACE, KEY_SHIFT],
 		"grab": [KEY_E, KEY_ENTER, MOUSE_BUTTON_LEFT],
 		"reset_match": [KEY_R],
+		"pause": [KEY_ESCAPE],
 	}
 	
 	for action in inputs:

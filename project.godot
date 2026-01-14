@@ -10,8 +10,7 @@ config_version=5
 
 [application]
 
-config/name="ProjectArc"
-run/main_scene="res://core/Main.tscn"
+run/main_scene="res://core/Menu.tscn"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
