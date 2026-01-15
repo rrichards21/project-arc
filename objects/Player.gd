@@ -10,6 +10,7 @@ var current_health: int = 100
 
 var is_dead: bool = false
 var team_id: int = 0 # 0=None, 1=Blue, 2=Red
+var dash_cooldown: bool = false
 
 func _update_dead_visuals() -> void:
 	# Enforce state
@@ -57,6 +58,12 @@ func _physics_process(delta: float) -> void:
 		return # Sync handles position, no local physics needed for puppets
 
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	
+	# Mobile Input Integration
+	if GameManager.mobile_movement != Vector2.ZERO:
+		input_dir = GameManager.mobile_movement
+		
+	# Input relative to global world coordinates
 	# Input relative to global world coordinates
 	# We do NOT use transform.basis here because we want WASD to always mean Global North/South/East/West
 	var direction := Vector3(input_dir.x, 0, input_dir.y).normalized()
@@ -75,8 +82,11 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, GameConfigs.PLAYER_SPEED)
 		velocity.z = move_toward(velocity.z, 0, GameConfigs.PLAYER_SPEED)
 	
-	if Input.is_action_just_pressed("dash") and direction:
+	if (Input.is_action_just_pressed("dash") or (GameManager.mobile_dash and not dash_cooldown)) and direction:
 		velocity += direction * GameConfigs.DASH_FORCE
+		dash_cooldown = true
+		await get_tree().create_timer(1.0).timeout
+		dash_cooldown = false
 
 	# Gravity
 	if not is_on_floor():
@@ -105,10 +115,33 @@ func _handle_grabbing() -> void:
 		else:
 			print("Grab attempt: RayCast hit nothing.")
 
-	if Input.is_action_just_released("grab"):
+	if Input.is_action_just_released("grab") or (GameManager.mobile_action == false and grabbing_mobile_active):
 		# Request Server to stop grab
 		print("Sending request_release RPC")
 		rpc_id(1, "request_release")
+		grabbing_mobile_active = false
+
+	# Logic for Mobile Action (Contextual)
+	if GameManager.mobile_action and not grabbing_mobile_active:
+		# Check context only on JUST press? 
+		# We need a 'just_pressed' tracker for mobile bool, or just check if not holding.
+		# Simple state machine:
+		if $RayCast3D.is_colliding():
+			var collider = $RayCast3D.get_collider()
+			if collider is RigidBody3D:
+				# Context: GRAB
+				grabbing_mobile_active = true
+				print("Mobile Grab Start")
+				rpc_id(1, "request_grab", collider.get_path())
+			elif collider is Player:
+				# Context: ATTACK (Handled in _handle_attack, but mobile needs trigger)
+				# Let's handle generic attack trigger here if not grabbing?
+				pass
+		else:
+			# Context: ATTACK (Air swing)
+			pass
+
+var grabbing_mobile_active: bool = false
 
 @rpc("any_peer", "call_local")
 func request_grab(path: NodePath) -> void:
@@ -151,12 +184,40 @@ func execute_grab(path: NodePath) -> void:
 func execute_release() -> void:
 	$Generic6DOFJoint3D.node_b = NodePath("")
 
+func server_force_release() -> void:
+	if not multiplayer.is_server(): return
+	
+	# 1. Restore authority of held object if any
+	if $Generic6DOFJoint3D.node_b:
+		var node = get_node_or_null($Generic6DOFJoint3D.node_b)
+		if node and node.has_method("set_owner_id"):
+			node.set_owner_id(1)
+			node.rpc("set_owner_id", 1)
+			
+	# 2. Unlink everywhere
+	rpc("execute_release")
+	grabbing_mobile_active = false
+
 func _handle_attack() -> void:
 	# Local check (predictions)
 	if is_dead: return
 	
-	if Input.is_action_just_pressed("attack"):
+	var is_attacking = Input.is_action_just_pressed("attack")
+	
+	# Mobile Attack Logic: If pressed and NOT grabbing anything
+	if GameManager.mobile_action and not grabbing_mobile_active:
+		# Debounce: Ensure we only fire once per press (like just_pressed)
+		if not _mobile_attack_fired:
+			_mobile_attack_fired = true
+			is_attacking = true
+	else:
+		_mobile_attack_fired = false
+	
+	if is_attacking:
+		print("Attempting Attack RPC...")
 		rpc_id(1, "request_attack")
+
+var _mobile_attack_fired: bool = false
 
 @rpc("any_peer", "call_local")
 func request_attack() -> void:
@@ -168,10 +229,15 @@ func request_attack() -> void:
 	# Server validates hit
 	if $RayCast3D.is_colliding():
 		var collider = $RayCast3D.get_collider()
+		print("[Server] Attack Ray Hit: ", collider.name) 
 		if collider is Player and collider != self:
 			if not collider.is_dead:
 				collider.take_damage(25) # 4 hits to kill
-				print("Hit player: " + collider.name)
+				print("[Server] Valid Hit on Player: " + collider.name)
+		else:
+			print("[Server] Hit ignored (Not a player or self)")
+	else:
+		print("[Server] Attack Ray Missed (Is enabled? Length OK?)")
 
 func take_damage(amount: int) -> void:
 	# Server only logic for state
@@ -208,8 +274,13 @@ func respawn() -> void:
 	rpc("force_teleport", position)
 
 @rpc("call_local")
-func force_teleport(pos: Vector3) -> void:
-	position = pos
+func force_teleport(pos: Vector3, look_pos: Vector3 = Vector3.ZERO) -> void:
+	global_position = pos
+	velocity = Vector3.ZERO
+	if look_pos != Vector3.ZERO:
+		look_at(look_pos, Vector3.UP)
+		rotation.x = 0
+		rotation.z = 0
 
 # Update loop to check health changes (simple approach since sync happens)
 func _process(_delta: float) -> void:

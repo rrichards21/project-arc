@@ -1,0 +1,111 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://core/ControlsConfig.gd" id="1_script"]
+
+[node name="ControlsConfig" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.490196)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="TopBar" type="Panel" parent="UI"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+grow_horizontal = 2
+
+[node name="HBox" type="HBoxContainer" parent="UI/TopBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="UI/TopBar/HBox"]
+layout_mode = 2
+text = "EDIT MODE: Drag to Move | Tap to Select"
+
+[node name="Controls" type="HBoxContainer" parent="UI/TopBar"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -210.0
+offset_right = -10.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="BtnReset" type="Button" parent="UI/TopBar/Controls"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Reset"
+
+[node name="BtnSave" type="Button" parent="UI/TopBar/Controls"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "SAVE"
+
+[node name="EditPanel" type="Panel" parent="UI"]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -120.0
+offset_right = 150.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="VBox" type="VBoxContainer" parent="UI/EditPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="UI/EditPanel/VBox"]
+layout_mode = 2
+text = "Scale Control"
+horizontal_alignment = 1
+
+[node name="HSliderScale" type="HSlider" parent="UI/EditPanel/VBox"]
+layout_mode = 2
+min_value = 0.5
+max_value = 2.0
+step = 0.1
+value = 1.0
+
+[connection signal="pressed" from="UI/TopBar/Controls/BtnReset" to="." method="_on_btn_reset_pressed"]
+[connection signal="pressed" from="UI/TopBar/Controls/BtnSave" to="." method="_on_btn_save_pressed"]
+[connection signal="value_changed" from="UI/EditPanel/VBox/HSliderScale" to="." method="_on_scale_changed"]

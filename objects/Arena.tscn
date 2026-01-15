@@ -70,3 +70,7 @@ shape = SubResource("BoxShape3D_WallShort")
 [node name="MeshWallWest" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.5, 2.5, 0)
 mesh = SubResource("BoxMesh_WallShort")
+
+[node name="CollisionCeiling" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
+shape = SubResource("BoxShape3D_Floor")

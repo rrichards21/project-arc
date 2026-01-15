@@ -1,11 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://mainscene_uuid_001"]
+[gd_scene load_steps=7 format=3 uid="uid://cbuvity2ifdxu"]
 
-[ext_resource type="Script" path="res://core/Main.gd" id="1_main"]
-[ext_resource type="Script" path="res://core/CameraFollow.gd" id="2_camera"]
-[ext_resource type="Script" path="res://core/PauseMenu.gd" id="3_pause"]
+[ext_resource type="Script" uid="uid://b4p4khfev5xhk" path="res://core/Main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://cpq3lf87mwycf" path="res://core/CameraFollow.gd" id="2_camera"]
+[ext_resource type="Script" uid="uid://ovn3obksbewx" path="res://core/PauseMenu.gd" id="3_pause"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
-sky_top_color = Color(0.385, 0.454, 0.55, 1)
 sky_horizon_color = Color(0.646, 0.656, 0.67, 1)
 
 [sub_resource type="Sky" id="Sky_1"]
@@ -33,8 +32,8 @@ shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707106, 0.707106, 0, -0.707106, 0.707106, 0, 10, 10)
-script = ExtResource("2_camera")
 current = true
+script = ExtResource("2_camera")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

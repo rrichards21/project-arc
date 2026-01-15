@@ -1,0 +1,87 @@
+[gd_scene load_steps=5 format=3 uid="uid://crx6ceyqxsqo7"]
+
+[ext_resource type="Script" uid="uid://c7vdvn7em08c3" path="res://core/MobileControls.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://jlyg72oiin1h" path="res://assets/addons/joystick_plugin/joystick.tscn" id="2_joystick_plugin"]
+
+[sub_resource type="Gradient" id="Gradient_JoystickBase"]
+offsets = PackedFloat32Array(0, 0.99)
+colors = PackedColorArray(1, 1, 1, 0.2, 1, 1, 1, 0.1)
+
+[sub_resource type="GradientTexture2D" id="Tex_JoystickBase"]
+gradient = SubResource("Gradient_JoystickBase")
+width = 150
+height = 150
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[node name="MobileControls" type="CanvasLayer"]
+script = ExtResource("1_script")
+
+[node name="Joystick" parent="." instance=ExtResource("2_joystick_plugin")]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 50.0
+offset_top = -350.0
+offset_right = 350.0
+offset_bottom = -50.0
+grow_vertical = 0
+script = null
+scale = Vector2(1, 1)
+
+[node name="Buttons" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -350.0
+offset_top = -350.0
+offset_right = -50.0
+offset_bottom = -50.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="BtnAction" type="TouchScreenButton" parent="Buttons"]
+position = Vector2(150, 50)
+scale = Vector2(2, 2)
+texture_normal = SubResource("Tex_JoystickBase")
+action = ""
+
+[node name="Label" type="Label" parent="Buttons/BtnAction"]
+offset_left = 22.0
+offset_top = 60.0
+offset_right = 127.0
+offset_bottom = 83.0
+text = "HIT / GRAB"
+
+[node name="BtnDash" type="TouchScreenButton" parent="Buttons"]
+position = Vector2(0, 100)
+texture_normal = SubResource("Tex_JoystickBase")
+action = "dash"
+
+[node name="Label2" type="Label" parent="Buttons/BtnDash"]
+offset_left = 40.0
+offset_top = 60.0
+offset_right = 110.0
+offset_bottom = 83.0
+text = "DASH"
+
+[node name="Buttons2" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -300.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[connection signal="pressed" from="Buttons/BtnAction" to="." method="_on_btn_action_pressed"]
+[connection signal="released" from="Buttons/BtnAction" to="." method="_on_btn_action_released"]
+[connection signal="pressed" from="Buttons/BtnDash" to="." method="_on_btn_dash_pressed"]
+[connection signal="released" from="Buttons/BtnDash" to="." method="_on_btn_dash_released"]

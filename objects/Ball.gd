@@ -8,5 +8,7 @@ func _ready() -> void:
     max_contacts_reported = 3
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
-    # Custom gravity or damping if needed
-    pass
+    if position.length() > 50.0:
+        state.transform.origin = Vector3(0, 2, 0)
+        state.linear_velocity = Vector3.ZERO
+        state.angular_velocity = Vector3.ZERO

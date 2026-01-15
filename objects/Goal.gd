@@ -23,6 +23,19 @@ func _on_body_entered(body: Node3D) -> void:
 	if body is RigidBody3D and body.name.to_lower().contains("ball"):
 		goal_scored.emit(team_id)
 
+var _reset_pending: bool = false
+var _reset_pos: Vector3
+var _reset_rot: Vector3
+
+func force_reset(pos: Vector3, rot_deg: Vector3) -> void:
+	_reset_pos = pos
+	_reset_rot = rot_deg
+	_reset_pending = true
+
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
-	# Example: Lock Y axis translation/rotation to keep it on the ground if needed
-	pass
+	if _reset_pending:
+		state.transform.origin = _reset_pos
+		state.transform.basis = Basis.from_euler(_reset_rot * (PI / 180.0))
+		state.linear_velocity = Vector3.ZERO
+		state.angular_velocity = Vector3.ZERO
+		_reset_pending = false

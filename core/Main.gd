@@ -7,7 +7,20 @@ extends Node3D
 
 func _ready() -> void:
 	print("Main Scene Ready")
+	
+	# Force Landscape for Mobile
+	# DEBUG: OR is_debug_build() to test on PC
+	if OS.get_name() == "Android" or OS.get_name() == "iOS" or OS.is_debug_build():
+		# Use integer 4 for SENSOR_LANDSCAPE (Auto-rotate between landscape modes)
+		# Constant seems missing in this specific build/context?
+		DisplayServer.screen_set_orientation(4)
+		
+		# Instance Mobile Controls
+		var controls = load("res://core/MobileControls.tscn").instantiate()
+		$HUD.add_child(controls)
+	
 	GameManager.match_started.connect(_on_match_started)
+	GameManager.match_ended.connect(_on_match_ended)
 	# Listen for score updates (Networked)
 	GameManager.score_updated.connect(_on_score_updated)
 	
@@ -41,7 +54,6 @@ func _on_match_started() -> void:
 		for id in GameManager.players:
 			var player = player_scn.instantiate()
 			player.name = str(id) # Important: Set name to peer ID logic
-			player.position = Vector3(0, 1, 0)
 			
 			# Team Assignment: Simple Alternating
 			var team = (index % 2) + 1
@@ -98,6 +110,82 @@ func _process(_delta: float) -> void:
 	var s = int(GameManager.time_remaining) % 60
 	$HUD/TimeLabel.text = "%02d:%02d" % [m, s]
 
+var is_resetting = false
+
 func _on_goal_scored(team_id: int) -> void:
+	if is_resetting: return
+	
+	is_resetting = true
 	GameManager.on_goal_scored(team_id)
 	$HUD/ScoreLabel.text = "%d - %d" % [GameManager.score_team_1, GameManager.score_team_2]
+	
+	# Celebration Time (3 seconds)
+	await get_tree().create_timer(3.0).timeout
+	
+	# Reset Everything for next round
+	reset_round()
+	is_resetting = false
+
+func reset_round() -> void:
+	# Note: Only the server calls this
+	
+	# 1. Reset Goals
+	# 1. Reset Goals
+	var goal1 = get_node_or_null("Goal1")
+	if goal1:
+		# Use robust physics reset
+		goal1.force_reset(Vector3(0, 0.5, -12), Vector3(0, 0, 0))
+		
+	var goal2 = get_node_or_null("Goal2")
+	if goal2:
+		# Use robust physics reset
+		goal2.force_reset(Vector3(0, 0.5, 12), Vector3(0, 180, 0))
+
+	# 2. Reset Ball
+	var ball = get_node_or_null("Ball")
+	if ball:
+		ball.global_position = Vector3(0, 2, 0)
+		ball.linear_velocity = Vector3.ZERO
+		ball.angular_velocity = Vector3.ZERO
+
+	# 3. Reset Players
+	for id in GameManager.players:
+		var p_node = get_node_or_null(str(id))
+		if p_node:
+			# Determine spawn based on team (same logic as _on_match_started but simpler)
+			# We stored team_id on the player node
+			var spawn_pos = Vector3.ZERO
+			if p_node.team_id == 1:
+				spawn_pos = Vector3(0, 1, 8)
+			else:
+				spawn_pos = Vector3(0, 1, -8)
+			
+			# Force drop anything they are holding
+			p_node.server_force_release()
+			
+			# Force position sync via RPC (since Client is authority of their own movement)
+			p_node.rpc("force_teleport", spawn_pos, Vector3.ZERO)
+
+func _on_match_ended(winner: int) -> void:
+	var win_text = "DRAW!"
+	if winner == 1:
+		win_text = "BLUE TEAM WINS!"
+	elif winner == 2:
+		win_text = "RED TEAM WINS!"
+		
+	var label = Label.new()
+	label.text = win_text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 64)
+	label.anchors_preset = Control.PRESET_CENTER
+	# Center on screen
+	label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	$HUD.add_child(label)
+	
+	print("Match Over. Winner: " + str(winner))
+	
+	await get_tree().create_timer(5.0).timeout
+	
+	GameManager.reset_networking()
+	get_tree().change_scene_to_file("res://core/Menu.tscn")

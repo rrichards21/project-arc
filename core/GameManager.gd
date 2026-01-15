@@ -19,9 +19,15 @@ var is_game_active: bool = false
 # Multiplayer
 var peer = ENetMultiplayerPeer.new()
 var players = {} # { peer_id: { "name": "Player ID", "id": peer_id, "ready": false } }
-const PORT = 9999
+const PORT = 22774
 
 signal player_list_changed
+
+# Mobile Inputs
+var mobile_movement: Vector2 = Vector2.ZERO
+var mobile_jump: bool = false # Not used yet? Dash is separate.
+var mobile_dash: bool = false
+var mobile_action: bool = false # Contextual (Grab/Attack)
 
 func _ready() -> void:
 	_setup_inputs()
@@ -158,14 +164,23 @@ func sync_score(s1: int, s2: int) -> void:
 	print("Score Synced: %d - %d" % [score_team_1, score_team_2])
 
 func end_match() -> void:
+	if not multiplayer.is_server(): return
+	
 	current_state = GameState.GAME_OVER
 	var winner = 0
-	if score_team_a > score_team_b:
+	if score_team_1 > score_team_2:
 		winner = 1
-	elif score_team_b > score_team_a:
+	elif score_team_2 > score_team_1:
 		winner = 2
-	match_ended.emit(winner)
-	print("Match ended. Winner: Team %d" % winner)
+	
+	# Sync end match to all
+	rpc("sync_match_end", winner)
+
+@rpc("authority", "call_local", "reliable")
+func sync_match_end(winner_team: int) -> void:
+	current_state = GameState.GAME_OVER
+	match_ended.emit(winner_team)
+	print("Match ended. Winner: Team %d" % winner_team)
 
 func add_score(team: int) -> void:
 	if team == 1:

@@ -60,8 +60,16 @@ popup/item_2/id = 600
 [node name="BtnLocal" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
+focus_mode = 0
 theme_override_font_sizes/font_size = 24
 text = "Play Local"
+
+[node name="BtnControls" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 24
+text = "Controls"
 
 [node name="BtnPractice" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
@@ -78,12 +86,14 @@ alignment = 1
 [node name="BtnHost" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
+focus_mode = 0
 theme_override_font_sizes/font_size = 24
 text = "Host Game"
 
 [node name="BtnJoin" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
+focus_mode = 0
 theme_override_font_sizes/font_size = 24
 text = "Join Game"
 
@@ -94,6 +104,7 @@ theme_override_font_sizes/font_size = 24
 text = "Quit"
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/BtnLocal" to="." method="_on_btn_local_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/BtnControls" to="." method="_on_btn_controls_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/BtnPractice" to="." method="_on_btn_practice_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/BtnHost" to="." method="_on_btn_host_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/BtnJoin" to="." method="_on_btn_join_pressed"]
